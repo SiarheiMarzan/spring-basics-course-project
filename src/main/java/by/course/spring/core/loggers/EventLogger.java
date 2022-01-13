@@ -1,5 +1,7 @@
 package by.course.spring.core.loggers;
 
+import by.course.spring.core.beans.Event;
+
 public interface EventLogger {
-    public void logEvent(String msg);
+    public void logEvent(Event event);
 }
