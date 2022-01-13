@@ -1,15 +1,15 @@
 package by.course.spring.core;
 
 import by.course.spring.core.beans.Client;
-import by.course.spring.core.loggers.ConsoleEventLogger;
 import by.course.spring.core.loggers.EventLogger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class App {
 
     private Client client;
 
     private EventLogger eventLogger;
-    public App(){}
 
     public App(Client client, EventLogger eventLogger) {
         super();
@@ -18,12 +18,12 @@ public class App {
     }
 
     public static void main(String[] args) {
-        App app = new App();
-
-        app.client = new Client("1", "John Smith");
-        app.eventLogger = new ConsoleEventLogger();
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+        App app = (App) ctx.getBean("app");
 
         app.logEvent("Some event for user 1");
+        app.logEvent("Some event for user 2");
+
     }
 
     private void logEvent(String msg) {
