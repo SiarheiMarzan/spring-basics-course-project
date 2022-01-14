@@ -3,7 +3,6 @@ package by.course.spring.core;
 import by.course.spring.core.beans.Client;
 import by.course.spring.core.beans.Event;
 import by.course.spring.core.loggers.EventLogger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
