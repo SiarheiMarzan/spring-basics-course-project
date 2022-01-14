@@ -46,4 +46,7 @@
 
     <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance"/>
 
+    <bean id="monitor" class="by.course.spring.core.util.Monitor"/>
+    <bean id="awared" class="by.course.spring.core.util.AwareBean"/>
+
 </beans>
