@@ -12,10 +12,9 @@ import java.util.Map;
 public class App {
 
     private Client client;
-
     private EventLogger defaultLogger;
-
     private Map<EventType, EventLogger> loggers;
+    private String startupMessage;
 
     public App(Client client, EventLogger eventLogger, Map<EventType, EventLogger> loggers) {
         super();
@@ -49,5 +48,13 @@ public class App {
             logger = defaultLogger;
         }
         logger.logEvent(event);
+    }
+
+    public void setStartupMessage(String startupMessage) {
+        this.startupMessage = startupMessage;
+    }
+
+    public EventLogger getDefaultLogger() {
+        return defaultLogger;
     }
 }

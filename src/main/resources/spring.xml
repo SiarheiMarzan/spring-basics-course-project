@@ -1,36 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
- 		http://www.springframework.org/schema/beans
- 		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd">
 
     <import resource="loggers.xml"/>
 
-    <bean id="client" class="by.course.spring.core.beans.Client">
-        <constructor-arg index="0" value="1"/>
-        <constructor-arg value="John Smith"/>
-        <property name="greeting" value="Hello there"/>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:client.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
     </bean>
 
+    <bean id="client" class="by.course.spring.core.beans.Client"
+        p:greeting="${greeting}">
+        <constructor-arg index="0" value="${id}" />
+        <constructor-arg value="${name}" />
+    </bean>
+
+    <util:map id="loggerMap">
+        <entry key="INFO" value-ref="consoleEventLogger" />
+        <entry key="ERROR" value-ref="combinedEventLogger" />
+    </util:map>
+
     <bean id="app" class="by.course.spring.core.App">
-        <constructor-arg ref="client"/>
-        <constructor-arg ref="cacheFileEventLogger"/>
-        <constructor-arg>
-            <map>
-                <entry key="INFO" value-ref="consoleEventLogger"/>
-                <entry key="ERROR" value-ref="combinedEventLogger"/>
-            </map>
-        </constructor-arg>
+        <constructor-arg ref="client" />
+        <constructor-arg value="#{ T(by.course.spring.core.beans.Event).isDay(8,17) ?
+            cacheFileEventLogger : consoleEventLogger }" />
+        <constructor-arg ref="loggerMap"/>
+        <property name="startupMessage" value="#{'Hello user ' +
+            ( systemProperties['os.name'].contains('Windows') ?
+                systemEnvironment['USERNAME'] : systemEnvironment['USER'] ) +
+                '. Default logger is ' + app.defaultLogger.name }"/>
     </bean>
 
     <bean id="event" class="by.course.spring.core.beans.Event" scope="prototype">
-        <constructor-arg>
-            <bean class="java.util.Date"/>
-        </constructor-arg>
-        <constructor-arg ref="dateFormat"/>
+        <constructor-arg value="#{new java.util.Date()}"/>
+        <constructor-arg value="#{T(java.text.DateFormat).getDateTimeInstance()}" />
     </bean>
 
     <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance"/>
+
+    <bean id="monitor" class="by.course.spring.core.util.Monitor"/>
+    <bean id="awared" class="by.course.spring.core.util.AwareBean"/>
 
 </beans>

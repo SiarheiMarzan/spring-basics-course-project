@@ -3,8 +3,9 @@ package by.course.spring.core.loggers;
 import by.course.spring.core.beans.Event;
 
 import java.util.Collection;
+import java.util.Collections;
 
-public class CombinedEventLogger implements EventLogger {
+public class CombinedEventLogger extends AbstractLogger {
 
     private final Collection<EventLogger> loggers;
 
@@ -19,5 +20,8 @@ public class CombinedEventLogger implements EventLogger {
             eventLogger.logEvent(event);
         }
 
+    }
+    public Collection<EventLogger> getLoggers() {
+        return Collections.unmodifiableCollection(loggers);
     }
 }
