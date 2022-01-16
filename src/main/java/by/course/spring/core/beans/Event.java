@@ -1,16 +1,27 @@
 package by.course.spring.core.beans;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.text.DateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
+@Scope("prototype")
 public class Event {
 
     private int id;
     private String msg;
+
+    @Value("#{new java.util.Date()}")
     private Date date;
+
+    @Value("#{T(java.text.DateFormat).getDateTimeInstance()}")
     private DateFormat dateFormat;
+
     private static final AtomicInteger AUTO_ID = new AtomicInteger(0);
 
     public static boolean isDay(int start, int end) {
@@ -18,8 +29,12 @@ public class Event {
         return time.getHour() > start && time.getHour() < end;
     }
 
-    public Event(Date date, DateFormat df) {
+    public Event() {
         this.id = AUTO_ID.getAndIncrement();
+    }
+
+    public Event(Date date, DateFormat df) {
+        this();
         this.date = date;
         this.dateFormat = df;
     }
@@ -46,6 +61,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event [id=" + id + ", msg=" + msg + ", date=" + dateFormat.format(date) + "]";
+        return "Event [id=" + id + ", msg=" + msg + ", date="
+                + (dateFormat != null ? dateFormat.format(date) : date) + "]";
     }
 }

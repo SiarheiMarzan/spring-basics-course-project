@@ -6,12 +6,15 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
 
 @Aspect
+@Component
 public class LoggingAspect {
 
     @Pointcut("execution(* *.logEvent(..))")
-    private void allLogEventMethods() {}
+    private void allLogEventMethods() {
+    }
 
     @Pointcut("allLogEventMethods() && within(*.*File*Logger)")
     private void logEventInsideFileLoggers() {
@@ -24,14 +27,12 @@ public class LoggingAspect {
                 joinPoint.getSignature().getName());
     }
 
-    @AfterReturning(pointcut = "allLogEventMethods()",
-            returning = "retVal")
+    @AfterReturning(pointcut = "allLogEventMethods()", returning = "retVal")
     public void logAfter(Object retVal) {
         System.out.println("AFTER_RET: " + retVal);
     }
 
-    @AfterThrowing(pointcut = "allLogEventMethods()",
-            throwing = "ex")
+    @AfterThrowing(pointcut = "allLogEventMethods()", throwing = "ex")
     public void logAfterThrow(Throwable ex) {
         System.out.println("AFTER_THR: " + ex);
     }

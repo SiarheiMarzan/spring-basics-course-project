@@ -5,31 +5,54 @@ import by.course.spring.core.beans.Client;
 import by.course.spring.core.beans.Event;
 import by.course.spring.core.beans.EventType;
 import by.course.spring.core.loggers.EventLogger;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import by.course.spring.core.spring.AppConfig;
+import by.course.spring.core.spring.LoggerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
+@Service
 public class App {
 
+    @Autowired
     private Client client;
+
+    @Value("#{ T(by.course.spring.core.beans.Event).isDay(8,17) ? "
+            + "cacheFileEventLogger : consoleEventLogger }")
     private EventLogger defaultLogger;
+
+    @Resource(name = "loggerMap")
     private Map<EventType, EventLogger> loggers;
 
-
-
-    private String startupMessage;
+    @Autowired
     private StatisticsAspect statisticsAspect;
 
-    public App(Client client, EventLogger eventLogger, Map<EventType, EventLogger> loggers) {
-        super();
+    @Value("#{'Hello user ' + "
+            + "( systemProperties['os.name'].contains('Windows') ? "
+            + "systemEnvironment['USERNAME'] : systemEnvironment['USER'] ) + "
+            + "'. Default logger is ' + app.defaultLogger.name }")
+    private String startupMessage;
+
+    public App() {
+    }
+
+    App(Client client, EventLogger defaultLogger,
+        Map<EventType, EventLogger> loggersMap) {
         this.client = client;
-        this.defaultLogger = eventLogger;
-        this.loggers = loggers;
+        this.defaultLogger = defaultLogger;
+        this.loggers = loggersMap;
     }
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+        ctx.register(AppConfig.class, LoggerConfig.class);
+        ctx.scan("by.core.spring.core");
+        ctx.refresh();
+
         App app = (App) ctx.getBean("app");
 
         System.out.println(app.startupMessage);
@@ -65,6 +88,7 @@ public class App {
         if (logger == null) {
             logger = defaultLogger;
         }
+
         logger.logEvent(event);
     }
 
@@ -75,14 +99,6 @@ public class App {
                 System.out.println("    " + entry.getKey().getSimpleName() + ": " + entry.getValue());
             }
         }
-    }
-
-    public void setStatisticsAspect(StatisticsAspect statisticsAspect) {
-        this.statisticsAspect = statisticsAspect;
-    }
-
-    public void setStartupMessage(String startupMessage) {
-        this.startupMessage = startupMessage;
     }
 
     public EventLogger getDefaultLogger() {
