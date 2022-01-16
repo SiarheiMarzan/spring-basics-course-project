@@ -1,5 +1,6 @@
 package by.course.spring.core;
 
+import by.course.spring.core.aspects.StatisticsAspect;
 import by.course.spring.core.beans.Client;
 import by.course.spring.core.beans.Event;
 import by.course.spring.core.beans.EventType;
@@ -14,7 +15,11 @@ public class App {
     private Client client;
     private EventLogger defaultLogger;
     private Map<EventType, EventLogger> loggers;
+
+
+
     private String startupMessage;
+    private StatisticsAspect statisticsAspect;
 
     public App(Client client, EventLogger eventLogger, Map<EventType, EventLogger> loggers) {
         super();
@@ -27,14 +32,27 @@ public class App {
         ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
         App app = (App) ctx.getBean("app");
 
+        System.out.println(app.startupMessage);
+
+        Client client = ctx.getBean(Client.class);
+        System.out.println("Client says: " + client.getGreeting());
+
         Event event = ctx.getBean(Event.class);
-        app.logEvent(EventType.INFO, event,"Some event for user 1");
+        app.logEvent(EventType.INFO, event, "Some event for 1");
 
         event = ctx.getBean(Event.class);
-        app.logEvent(EventType.ERROR, event,"Some event for user 2");
+        app.logEvent(EventType.ERROR, event, "One more event for 1");
 
         event = ctx.getBean(Event.class);
-        app.logEvent(null, event,"Some event for user 3");
+        app.logEvent(EventType.INFO, event, "And one more event for 1");
+
+        event = ctx.getBean(Event.class);
+        app.logEvent(EventType.ERROR, event, "Some event for 2");
+
+        event = ctx.getBean(Event.class);
+        app.logEvent(null, event, "Some event for 3");
+
+        app.outputLoggingCounter();
 
         ctx.close();
     }
@@ -44,10 +62,23 @@ public class App {
         event.setMsg(message);
 
         EventLogger logger = loggers.get(eventType);
-        if(logger == null) {
+        if (logger == null) {
             logger = defaultLogger;
         }
         logger.logEvent(event);
+    }
+
+    private void outputLoggingCounter() {
+        if (statisticsAspect != null) {
+            System.out.println("Loggers statistics. Number of calls: ");
+            for (Map.Entry<Class<?>, Integer> entry : statisticsAspect.getCounter().entrySet()) {
+                System.out.println("    " + entry.getKey().getSimpleName() + ": " + entry.getValue());
+            }
+        }
+    }
+
+    public void setStatisticsAspect(StatisticsAspect statisticsAspect) {
+        this.statisticsAspect = statisticsAspect;
     }
 
     public void setStartupMessage(String startupMessage) {

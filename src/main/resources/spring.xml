@@ -9,6 +9,8 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.2.xsd">
 
+    <import resource="aspects.xml"/>
+
     <import resource="loggers.xml"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -34,13 +36,18 @@
 
     <bean id="app" class="by.course.spring.core.App">
         <constructor-arg ref="client" />
+
         <constructor-arg value="#{ T(by.course.spring.core.beans.Event).isDay(8,17) ?
             cacheFileEventLogger : consoleEventLogger }" />
+
         <constructor-arg ref="loggerMap"/>
+
         <property name="startupMessage" value="#{'Hello user ' +
             ( systemProperties['os.name'].contains('Windows') ?
                 systemEnvironment['USERNAME'] : systemEnvironment['USER'] ) +
                 '. Default logger is ' + app.defaultLogger.name }"/>
+
+        <property name="statisticsAspect" ref="statisticsAspect"/>
     </bean>
 
     <bean id="event" class="by.course.spring.core.beans.Event" scope="prototype">
@@ -48,9 +55,7 @@
         <constructor-arg value="#{T(java.text.DateFormat).getDateTimeInstance()}" />
     </bean>
 
-    <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance"/>
-
     <bean id="monitor" class="by.course.spring.core.util.Monitor"/>
-    <bean id="awared" class="by.course.spring.core.util.AwareBean"/>
+    <bean id="awared" class="by.course.spring.core.util.AwareBean" init-method="init"/>
 
 </beans>
