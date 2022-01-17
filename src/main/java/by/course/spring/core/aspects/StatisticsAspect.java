@@ -33,7 +33,7 @@ public class StatisticsAspect {
         return Collections.unmodifiableMap(counter);
     }
 
-    @AfterReturning("execution(* by.core.spring.core.App.logEvents(..))")
+    @AfterReturning("execution(* by.course.spring.core.App.logEvents(..))")
     public void outputLoggingCounter() {
         System.out.println("Loggers statistics. Number of calls: ");
         for (Map.Entry<Class<?>, Integer> entry : counter.entrySet()) {

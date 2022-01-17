@@ -28,8 +28,8 @@ public class ConsoleLoggerLimitAspect {
         this.otherLogger = otherLogger;
     }
 
-    @Around("execution(* *.logEvent(by.core.spring.core.beans.Event)) "
-            + "&& within(by.core.spring.core.loggers.ConsoleEventLogger) "
+    @Around("execution(* *.logEvent(by.course.spring.core.beans.Event)) "
+            + "&& within(by.course.spring.core.loggers.ConsoleEventLogger) "
             + "&& args(evt)")
     public void aroundLogEvent(ProceedingJoinPoint jp, Event evt) throws Throwable {
         if (currentCount < maxCount) {

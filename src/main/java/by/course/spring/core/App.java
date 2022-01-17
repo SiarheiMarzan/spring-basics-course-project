@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 public class App {
 
-    @Autowired
+    @Autowired(required = true)
     private Client client;
 
     @Value("#{ T(by.course.spring.core.beans.Event).isDay(8,17) ? "
