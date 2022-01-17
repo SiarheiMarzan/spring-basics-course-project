@@ -50,7 +50,7 @@ public class App {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(AppConfig.class, LoggerConfig.class, DBConfig.class);
-        ctx.scan("com.yet.spring.core");
+        ctx.scan("by.course.spring.core");
         ctx.refresh();
 
         App app = (App) ctx.getBean("app");
