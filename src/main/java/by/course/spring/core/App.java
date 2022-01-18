@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Map.Entry;
 
 @Service
 public class App {
@@ -50,7 +51,7 @@ public class App {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(AppConfig.class, LoggerConfig.class);
-        ctx.scan("by.core.spring.core");
+        ctx.scan("by.course.spring.core");
         ctx.refresh();
 
         App app = (App) ctx.getBean("app");
@@ -95,7 +96,7 @@ public class App {
     private void outputLoggingCounter() {
         if (statisticsAspect != null) {
             System.out.println("Loggers statistics. Number of calls: ");
-            for (Map.Entry<Class<?>, Integer> entry : statisticsAspect.getCounter().entrySet()) {
+            for (Entry<Class<?>, Integer> entry : statisticsAspect.getCounter().entrySet()) {
                 System.out.println("    " + entry.getKey().getSimpleName() + ": " + entry.getValue());
             }
         }
